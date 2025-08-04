@@ -14,7 +14,7 @@
         android:theme="@style/Theme.PracticeV">
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCfv8JZJooyVBwaIKqFumtycu24hamjRkc"/>
+            android:value="@string/api_key"/>
 
         <!-- Splash Screen as the entry point -->
         <activity

@@ -9,30 +9,130 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="30dp"
+            android:text="Nickname:"/>
         <EditText
-            android:id="@+id/editTextItemName"
+            android:id="@+id/nickname_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/item_name"
             android:inputType="textPersonName"
             android:layout_marginBottom="16dp" />
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="30dp"
+            android:text="Description:"/>
         <EditText
             android:id="@+id/editTextItemDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/description"
             android:inputType="textMultiLine"
             android:lines="3"
             android:layout_marginBottom="16dp" />
 
-        <EditText
-            android:id="@+id/editTextItemRating"
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="30dp"
+            android:text="Rating:"/>
+        <LinearLayout
+            android:id="@+id/rating_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/rating"
-            android:inputType="numberDecimal"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginStart="20dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/rating_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.0"
+                android:textSize="30dp"
+                android:layout_marginEnd="10dp"/>
+            <com.google.android.material.slider.Slider
+                android:id="@+id/ratingSlider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:valueFrom="0"
+                android:valueTo="5"
+                android:stepSize="0.5" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:text="@string/place_information_label"/>
+            <LinearLayout
+                android:id="@+id/name_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/name_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Name:"
+                    android:layout_marginEnd="10dp"/>
+                <TextView
+                    android:id="@+id/name_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Name placeholder"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/lat_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/lat_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/latitude_label"
+                    android:layout_marginEnd="10dp"/>
+                <TextView
+                    android:id="@+id/lat_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/latitude_placeholder"/>
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/long_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/long_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/longitude_label"
+                    android:layout_marginEnd="10dp"/>
+                <TextView
+                    android:id="@+id/long_textview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/longitude_placeholder"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button_edit_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/edit_location_label" />
 
         <Button
             android:id="@+id/buttonSaveItem"

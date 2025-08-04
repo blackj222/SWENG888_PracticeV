@@ -30,8 +30,48 @@
         android:id="@+id/textViewAccountEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textStyle="bold"
         android:text="@string/email_colon"
         android:textSize="16sp"
         android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Account:"
+        android:textStyle="bold"
+        android:paddingEnd="10dp"
+        />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="wrap_content"
+            android:text="To delete your account, enter your password and hit delete:"
+            android:paddingEnd="10dp"
+            />
+        <ImageButton
+            android:id="@+id/delete_account_button"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_delete"
+            android:backgroundTint="@color/error_red"
+            />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/editTextPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/password"
+        android:autofillHints="password"
+        android:inputType="textPassword"
+        android:padding="12dp" />
 
 </LinearLayout>

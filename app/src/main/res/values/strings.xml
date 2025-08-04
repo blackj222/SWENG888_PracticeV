@@ -55,4 +55,18 @@
     <string name="settings">Settings</string>
     <string name="logout">Logout</string>
     <string name="previous">Previous</string>
+    <string name="api_key">AIzaSyCfv8JZJooyVBwaIKqFumtycu24hamjRkc</string>
+    <string name="zoom_in">Zoom In</string>
+    <string name="zoom_out">Zoom Out</string>
+    <string name="add_current_place_label">Add current place</string>
+    <string name="place_placeholder">Place placeholder</string>
+    <string name="edit_location_label">Edit location</string>
+    <string name="address_label">Address:</string>
+    <string name="address_placeholder">Address placeholder</string>
+    <string name="latitude_label">Latitude:</string>
+    <string name="latitude_placeholder">Latitude placeholder</string>
+    <string name="longitude_label">Longitude:</string>
+    <string name="longitude_placeholder">Longitude placeholder</string>
+    <string name="place_information_label">Place Information:</string>
+    <string name="menu_label">Menu</string>
 </resources>

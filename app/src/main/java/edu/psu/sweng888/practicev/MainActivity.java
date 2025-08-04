@@ -1,3 +1,5 @@
+// MainActivity.java - Hosts the main UI with navigation drawer, handles fragment switching and Firebase authentication
+
 package edu.psu.sweng888.practicev;
 
 import android.content.Context;
@@ -5,38 +7,38 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
+import com.google.android.libraries.places.api.Places;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import edu.psu.sweng888.practicev.fragments.AccountFragment;
 import edu.psu.sweng888.practicev.fragments.ItemsFragment;
-import edu.psu.sweng888.practicev.fragments.SettingsFragment;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    // Firebase authentication
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+    private FirebaseAuth mAuth; // Firebase authentication
 
-    // Firebase authentication
-    private FirebaseAuth mAuth;
-
-    // Instead of switch cases with R.id, define menu keys
+    // Navigation constants
     private static final int MENU_ITEMS = 1;
     private static final int MENU_ACCOUNT = 2;
     private static final int MENU_SETTINGS = 3;
@@ -47,67 +49,83 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Set up the toolbar as the app bar
+        // Default fragment display
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                .replace(R.id.fragment_container, new ItemsFragment())
+                .commit();
+        }
+
+        // Handle back press to navigate fragment stack
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.getBackStackEntryCount() > 0) {
+                    fm.popBackStack();
+                } else {
+                    fm.beginTransaction()
+                        .replace(R.id.fragment_container, new ItemsFragment())
+                        .commit();
+                }
+            }
+        });
+
+        // Initialize Google Places if not already initialized
+        if (!Places.isInitialized()) {
+            Places.initialize(getApplicationContext(), getString(R.string.api_key));
+        }
+
+        // Set up toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
-        // Bind DrawerLayout and NavigationView
+        // Initialize drawer components
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // Add the hamburger menu toggle to open/close the drawer
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState(); // sync the hamburger icon with the drawer state
-
-        // Get current user from Firebase Authentication
+        // Initialize Firebase auth and user
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 
-        // Access the header of the navigation drawer
+        // Populate header with user info if available
         View headerView = navigationView.getHeaderView(0);
         TextView navUserName = headerView.findViewById(R.id.textViewUserName);
         TextView navUserEmail = headerView.findViewById(R.id.textViewUserEmail);
 
-        // If user is signed in, show their email and display name in the drawer header
         if (user != null) {
             navUserEmail.setText(user.getEmail());
             String navUserNameString = "Welcome, " + user.getDisplayName() + "!";
             navUserName.setText(navUserNameString);
         }
 
-        // Load a default fragment when the activity first starts
+        // Set default selected item and fragment
         if (savedInstanceState == null) {
-            loadFragment(MENU_ITEMS); // open ItemsFragment by default
+            loadFragment(MENU_ITEMS);
             navigationView.setCheckedItem(R.id.nav_items);
         }
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        // Convert the clicked menu item’s ID to one of our constants
         int menuKey = getMenuKey(item.getItemId());
-        // Perform the action for that menu item
         handleMenuAction(menuKey);
-        // Close the drawer after selecting an item
-        drawerLayout.closeDrawer(GravityCompat.START);
+        drawerLayout.closeDrawer(GravityCompat.END);
         return true;
     }
 
-    // This method maps R.id to the internal constants
+    // Translate menu item ID into logical constant
     private int getMenuKey(int menuId) {
         if (menuId == R.id.nav_items) return MENU_ITEMS;
         if (menuId == R.id.nav_account) return MENU_ACCOUNT;
-        if (menuId == R.id.nav_settings) return MENU_SETTINGS;
         if (menuId == R.id.nav_logout) return MENU_LOGOUT;
         return -1;
     }
 
-    // Handle what happens when each menu option is selected
+    // Respond to selected menu option
     private void handleMenuAction(int menuKey) {
         Fragment selectedFragment = null;
 
@@ -115,59 +133,69 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             selectedFragment = new ItemsFragment();
         } else if (menuKey == MENU_ACCOUNT) {
             selectedFragment = new AccountFragment();
-        } else if (menuKey == MENU_SETTINGS) {
-            selectedFragment = new SettingsFragment();
         } else if (menuKey == MENU_LOGOUT) {
-            // Sign out from Firebase and go back to LoginActivity
             mAuth.signOut();
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
-            finish(); // close MainActivity so user can’t go back
+            finish();
             return;
         }
 
-        // If a valid fragment was chosen, replace the container with that fragment
         if (selectedFragment != null) {
             loadFragment(menuKey);
         }
     }
 
-    // Load the selected fragment into the main container
+    // Replaces fragment container with selected fragment
     private void loadFragment(int menuKey) {
         Fragment fragment = null;
         if (menuKey == MENU_ITEMS) {
             fragment = new ItemsFragment();
         } else if (menuKey == MENU_ACCOUNT) {
             fragment = new AccountFragment();
-        } else if (menuKey == MENU_SETTINGS) {
-            fragment = new SettingsFragment();
         }
 
         if (fragment != null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .commit();
+                .replace(R.id.fragment_container, fragment)
+                .addToBackStack(null)
+                .commit();
         }
     }
 
-    /**
-     * This method ensures the app uses the saved locale.
-     * It wraps the context with a Configuration that sets the correct language
-     * before resources like strings are loaded.
-     */
+    // Ensure locale is applied from preferences before loading resources
     @Override
     protected void attachBaseContext(Context newBase) {
-        // Load saved language from SharedPreferences
         SharedPreferences prefs = newBase.getSharedPreferences("app_settings", Context.MODE_PRIVATE);
         String langCode = prefs.getString("app_lang", Locale.getDefault().getLanguage());
 
-        // Apply the locale
         Locale locale = new Locale(langCode);
         Locale.setDefault(locale);
         Configuration config = new Configuration();
         config.setLocale(locale);
 
-        // Create a new context with this configuration
         Context context = newBase.createConfigurationContext(config);
         super.attachBaseContext(context);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
+        return true;
+    }
+
+    // Handle toolbar menu actions (drawer toggle or back)
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.menu_drawer_toggle) {
+            drawerLayout.openDrawer(GravityCompat.END);
+            return true;
+        } else if (itemId == android.R.id.home) {
+            getSupportFragmentManager().popBackStack();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
